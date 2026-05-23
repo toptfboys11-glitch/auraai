@@ -271,9 +271,16 @@ Rules by situation:
     const data = await res.json();
     const text = data.content?.[0]?.text || '';
 
-    const pro = text.match(/\[PROFESSIONAL\]([\s\S]*?)(?=\[CLOSING\])/)?.[1]?.trim() || '';
-    const close = text.match(/\[CLOSING\]([\s\S]*?)(?=\[NEGOTIATION\])/)?.[1]?.trim() || '';
-    const nego = text.match(/\[NEGOTIATION\]([\s\S]*?)$/)?.[1]?.trim() || '';
+    // Parse 3 reply sections
+    const sections = text.split(/\[(?:PROFESSIONAL|CLOSING|NEGOTIATION)\]/i).slice(1);
+    const labelMatches = text.match(/\[(?:PROFESSIONAL|CLOSING|NEGOTIATION)\]/gi) || [];
+    const parsed = {};
+    labelMatches.forEach((lbl, i) => {
+      parsed[lbl.replace(/[\[\]]/g,'').toUpperCase()] = (sections[i] || '').trim();
+    });
+    const pro = parsed['PROFESSIONAL'] || '';
+    const replyClose = parsed['CLOSING'] || '';
+    const nego = parsed['NEGOTIATION'] || '';
 
     usageCount++;
     const pct = Math.min((usageCount/10)*100, 100);
@@ -320,9 +327,9 @@ Rules by situation:
             </div>
           </div>
           <div class="reply-card-body">
-            <div class="reply-text" id="close-text">${close}</div>
+            <div class="reply-text" id="close-text">${replyClose}</div>
           </div>
-          <div class="wa-bubble-prev">${close}<div class="wa-bubble-time">${timeStr} ✓✓</div></div>
+          <div class="wa-bubble-prev">${replyClose}<div class="wa-bubble-time">${timeStr} ✓✓</div></div>
         </div>
 
         <div class="reply-card">
