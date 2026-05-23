@@ -39,14 +39,10 @@ select:focus{border-color:var(--blue);}
 .usage-track{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;}
 .usage-fill{height:100%;background:var(--blue);border-radius:2px;transition:width 0.4s;}
 .usage-hint{font-size:11px;color:var(--muted);margin-top:5px;}
-
-/* OUTPUT */
-.output-panel{}
 .empty-state{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:4rem 2rem;text-align:center;}
 .empty-icon{font-size:44px;color:#d1d5db;margin-bottom:1rem;}
 .empty-title{font-size:17px;font-weight:600;margin-bottom:6px;}
 .empty-sub{font-size:14px;color:var(--muted);}
-
 .wa-preview-box{background:var(--bg);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1rem;}
 .wa-hdr{background:var(--wa-dark);padding:12px 16px;display:flex;align-items:center;gap:10px;}
 .wa-hdr-av{width:32px;height:32px;border-radius:50%;background:#5bc8af;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;}
@@ -55,7 +51,6 @@ select:focus{border-color:var(--blue);}
 .wa-body{background:var(--wa-bg);padding:14px;display:flex;flex-direction:column;gap:6px;}
 .wa-recv{background:#fff;border-radius:0 8px 8px 8px;padding:8px 12px;max-width:85%;font-size:13px;line-height:1.65;box-shadow:0 1px 2px rgba(0,0,0,0.08);}
 .wa-time{font-size:10px;color:var(--muted);padding-left:2px;}
-
 .reply-cards{display:flex;flex-direction:column;gap:1rem;}
 .rcard{background:var(--bg);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
 .rcard-hdr{padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg2);}
@@ -70,7 +65,6 @@ select:focus{border-color:var(--blue);}
 .rtext{font-size:14px;color:var(--ink2);line-height:1.8;white-space:pre-wrap;}
 .wa-bubble{background:var(--wa-bubble);border-radius:8px 0 8px 8px;padding:10px 14px;margin:0 16px 16px;font-size:13px;line-height:1.7;color:var(--ink);}
 .wa-bubble-time{font-size:10px;color:var(--muted);text-align:right;margin-top:4px;}
-
 @keyframes spin{to{transform:rotate(360deg);}}
 .spin{animation:spin 0.8s linear infinite;display:inline-block;}
 .toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--ink);color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:500;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:999;}
@@ -86,7 +80,7 @@ select:focus{border-color:var(--blue);}
   </a>
   <div class="nav-user">
     <span id="user-name">Guest</span>
-    <button class="upgrade-btn" onclick="location.href='pricing.html'">⚡ Upgrade</button>
+    <button class="upgrade-btn" onclick="location.href='pricing.html'">Upgrade</button>
   </div>
 </nav>
 
@@ -115,12 +109,12 @@ select:focus{border-color:var(--blue);}
         <label class="field-label">Your industry</label>
         <select id="industry">
           <option>General export / trading</option>
-          <option>Textile &amp; apparel</option>
-          <option>Electronics &amp; tech</option>
-          <option>Machinery &amp; equipment</option>
-          <option>Food &amp; agriculture</option>
-          <option>Furniture &amp; home goods</option>
-          <option>Chemicals &amp; materials</option>
+          <option>Textile and apparel</option>
+          <option>Electronics and tech</option>
+          <option>Machinery and equipment</option>
+          <option>Food and agriculture</option>
+          <option>Furniture and home goods</option>
+          <option>Chemicals and materials</option>
           <option>Automotive parts</option>
         </select>
       </div>
@@ -140,7 +134,7 @@ select:focus{border-color:var(--blue);}
           <span id="usage-text">0 / 10 free replies used</span>
         </div>
         <div class="usage-track"><div class="usage-fill" id="usage-fill" style="width:0%"></div></div>
-        <div class="usage-hint">Upgrade to Pro for unlimited replies →</div>
+        <div class="usage-hint">Upgrade to Pro for unlimited replies</div>
       </div>
     </div>
   </div>
@@ -154,9 +148,13 @@ select:focus{border-color:var(--blue);}
   </div>
 </div>
 
-<div class="toast" id="toast">Copied ✓</div>
+<div class="toast" id="toast">Copied!</div>
 
 <script>
+// ── CONFIG ──────────────────────────────────────────
+const ANTHROPIC_KEY = 'sk-ant-api03-placeholder-replace-this';
+// ────────────────────────────────────────────────────
+
 const presets = {
   price: "Hi, your price is too high. We found another supplier offering 20% cheaper. Can you match their price? We want to place 1,000 units if the price is right.",
   complaint: "We received the shipment but the quality is not what we expected. Some items are damaged and colors are different from samples. This is a serious issue.",
@@ -166,116 +164,135 @@ const presets = {
 };
 
 function setChip(btn, type) {
-  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
   btn.classList.add('active');
   document.getElementById('customer-msg').value = presets[type];
 }
 
-let usageCount = 0;
+var usageCount = 0;
 
-async function generate() {
-  const msg = document.getElementById('customer-msg').value.trim();
-  const industry = document.getElementById('industry').value;
-  const channel = document.getElementById('channel').value;
+function generate() {
+  var msg = document.getElementById('customer-msg').value.trim();
+  var industry = document.getElementById('industry').value;
+  var channel = document.getElementById('channel').value;
   if (!msg) { document.getElementById('customer-msg').focus(); return; }
 
-  const btn = document.getElementById('gen-btn');
+  var btn = document.getElementById('gen-btn');
   btn.disabled = true;
   btn.innerHTML = '<i class="ti ti-loader spin"></i> Generating...';
-
   document.getElementById('output-area').innerHTML = '<div class="empty-state"><div class="empty-icon"><i class="ti ti-loader spin" style="font-size:36px;color:var(--blue);"></i></div><div class="empty-title">Writing your replies...</div><div class="empty-sub">About 10 seconds</div></div>';
 
-  try {
-    const res = await fetch('/api/reply', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ msg, industry, channel })
-    });
+  var prompt = 'You are a senior export sales manager with 10+ years experience in ' + industry + '.\n\nCustomer ' + channel + ' message: "' + msg + '"\n\nWrite 3 different replies. Rules:\n- Natural human tone, NOT robotic\n- 3 to 5 sentences each\n- No cliches\n- Sound like a real salesperson\n\nUse EXACTLY this format:\n\n[PROFESSIONAL]\nReply 1 here.\n\n[CLOSING]\nReply 2 here.\n\n[NEGOTIATION]\nReply 3 here.';
 
-    const data = await res.json();
-    const raw = data.text || '';
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': ANTHROPIC_KEY,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  })
+  .then(function(res){ return res.json(); })
+  .then(function(data) {
+    var raw = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text : '';
+    console.log('Got response, length:', raw.length);
 
-    // Parse sections
-    const proMatch = raw.match(/\[PROFESSIONAL\]\s*([\s\S]+?)(?=\[CLOSING\]|\[NEGOTIATION\]|$)/i);
-    const closeMatch = raw.match(/\[CLOSING\]\s*([\s\S]+?)(?=\[NEGOTIATION\]|\[PROFESSIONAL\]|$)/i);
-    const negoMatch = raw.match(/\[NEGOTIATION\]\s*([\s\S]+?)(?=\[PROFESSIONAL\]|\[CLOSING\]|$)/i);
+    function extract(label) {
+      var idx = raw.toUpperCase().indexOf('[' + label + ']');
+      if (idx === -1) return '';
+      var after = raw.slice(idx + label.length + 2).trim();
+      var next = after.search(/\[(?:PROFESSIONAL|CLOSING|NEGOTIATION)\]/i);
+      return (next === -1 ? after : after.slice(0, next)).trim();
+    }
 
-    const proText = proMatch ? proMatch[1].trim() : '';
-    const closeText = closeMatch ? closeMatch[1].trim() : '';
-    const negoText = negoMatch ? negoMatch[1].trim() : '';
+    var proText = extract('PROFESSIONAL');
+    var closeText = extract('CLOSING');
+    var negoText = extract('NEGOTIATION');
 
-    const now = new Date();
-    const t = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+    var now = new Date();
+    var t = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
 
-    // Build output with DOM
-    const out = document.getElementById('output-area');
+    var out = document.getElementById('output-area');
     out.innerHTML = '';
 
-    // WhatsApp preview
-    const waBox = document.createElement('div');
+    // WhatsApp message preview
+    var waBox = document.createElement('div');
     waBox.className = 'wa-preview-box';
-    waBox.innerHTML = '<div class="wa-hdr"><div class="wa-hdr-av">C</div><div><div class="wa-hdr-name">Customer message</div><div class="wa-hdr-sub">' + channel + ' · ' + industry + '</div></div></div>';
-    const waBody = document.createElement('div');
+    var waHdr = document.createElement('div');
+    waHdr.className = 'wa-hdr';
+    waHdr.innerHTML = '<div class="wa-hdr-av">C</div><div><div class="wa-hdr-name">Customer message</div><div class="wa-hdr-sub">' + channel + ' · ' + industry + '</div></div>';
+    var waBody = document.createElement('div');
     waBody.className = 'wa-body';
-    const waMsg = document.createElement('div');
+    var waMsg = document.createElement('div');
     waMsg.className = 'wa-recv';
     waMsg.textContent = msg;
-    const waTime = document.createElement('div');
+    var waTime = document.createElement('div');
     waTime.className = 'wa-time';
     waTime.textContent = t;
     waBody.appendChild(waMsg);
     waBody.appendChild(waTime);
+    waBox.appendChild(waHdr);
     waBox.appendChild(waBody);
     out.appendChild(waBox);
 
     // Reply cards
-    const cards = document.createElement('div');
+    var cards = document.createElement('div');
     cards.className = 'reply-cards';
 
-    const replies = [
-      { label: 'Professional reply', cls: 'rb-pro', icon: 'ti-briefcase', id: 'pro', text: proText },
-      { label: 'Closing-oriented reply', cls: 'rb-close', icon: 'ti-target', id: 'cls', text: closeText },
-      { label: 'Soft negotiation reply', cls: 'rb-nego', icon: 'ti-handshake', id: 'neg', text: negoText }
+    var replies = [
+      { label: 'Professional Reply', cls: 'rb-pro', icon: 'ti-briefcase', text: proText },
+      { label: 'Closing-Oriented Reply', cls: 'rb-close', icon: 'ti-target', text: closeText },
+      { label: 'Soft Negotiation Reply', cls: 'rb-nego', icon: 'ti-handshake', text: negoText }
     ];
 
     replies.forEach(function(r) {
-      const card = document.createElement('div');
+      var card = document.createElement('div');
       card.className = 'rcard';
 
-      const hdr = document.createElement('div');
+      var hdr = document.createElement('div');
       hdr.className = 'rcard-hdr';
 
-      const badge = document.createElement('div');
+      var badge = document.createElement('div');
       badge.className = 'rbadge ' + r.cls;
-      badge.innerHTML = '<i class="ti ' + r.icon + '" style="font-size:12px;"></i> ' + r.label.toUpperCase();
+      badge.innerHTML = '<i class="ti ' + r.icon + '" style="font-size:12px;"></i> ' + r.label;
 
-      const copyBtn = document.createElement('button');
+      var copyBtn = document.createElement('button');
       copyBtn.className = 'copy-btn';
       copyBtn.innerHTML = '<i class="ti ti-copy" style="font-size:13px;"></i> Copy';
+      var rtext = r.text;
       copyBtn.onclick = function() {
-        navigator.clipboard.writeText(r.text);
-        const toast = document.getElementById('toast');
+        navigator.clipboard.writeText(rtext);
+        var toast = document.getElementById('toast');
         toast.classList.add('show');
         setTimeout(function(){ toast.classList.remove('show'); }, 2000);
         copyBtn.classList.add('copied');
         copyBtn.innerHTML = '<i class="ti ti-check" style="font-size:13px;"></i> Copied!';
-        setTimeout(function(){ copyBtn.classList.remove('copied'); copyBtn.innerHTML = '<i class="ti ti-copy" style="font-size:13px;"></i> Copy'; }, 2500);
+        setTimeout(function(){
+          copyBtn.classList.remove('copied');
+          copyBtn.innerHTML = '<i class="ti ti-copy" style="font-size:13px;"></i> Copy';
+        }, 2500);
       };
 
       hdr.appendChild(badge);
       hdr.appendChild(copyBtn);
 
-      const body = document.createElement('div');
+      var body = document.createElement('div');
       body.className = 'rcard-body';
-      const rtext = document.createElement('div');
-      rtext.className = 'rtext';
-      rtext.textContent = r.text;
-      body.appendChild(rtext);
+      var rtextEl = document.createElement('div');
+      rtextEl.className = 'rtext';
+      rtextEl.textContent = rtext;
+      body.appendChild(rtextEl);
 
-      const bubble = document.createElement('div');
+      var bubble = document.createElement('div');
       bubble.className = 'wa-bubble';
-      bubble.textContent = r.text;
-      const bubbleTime = document.createElement('div');
+      bubble.textContent = rtext;
+      var bubbleTime = document.createElement('div');
       bubbleTime.className = 'wa-bubble-time';
       bubbleTime.textContent = t + ' ✓✓';
       bubble.appendChild(bubbleTime);
@@ -289,17 +306,19 @@ async function generate() {
     out.appendChild(cards);
 
     usageCount++;
-    const pct = Math.min((usageCount / 10) * 100, 100);
+    var pct = Math.min((usageCount / 10) * 100, 100);
     document.getElementById('usage-text').textContent = usageCount + ' / 10 free replies used';
     document.getElementById('usage-fill').style.width = pct + '%';
 
-  } catch(e) {
-    console.error(e);
-    document.getElementById('output-area').innerHTML = '<div class="empty-state"><div class="empty-title">Something went wrong</div><div class="empty-sub">Please try again. Check your connection.</div></div>';
-  }
-
-  btn.disabled = false;
-  btn.innerHTML = '<i class="ti ti-sparkles"></i> Generate 3 replies';
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-sparkles"></i> Generate 3 replies';
+  })
+  .catch(function(e) {
+    console.error('Error:', e);
+    document.getElementById('output-area').innerHTML = '<div class="empty-state"><div class="empty-title">Error: ' + e.message + '</div><div class="empty-sub">Please try again.</div></div>';
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-sparkles"></i> Generate 3 replies';
+  });
 }
 </script>
 
@@ -307,9 +326,9 @@ async function generate() {
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 const sb = createClient('https://svuhyxxsfgujosmxejyy.supabase.co','sb_publishable_pJMBD68Lm3caEZqI02cg4A_cNbrFu5q');
 sb.auth.getSession().then(function(r){
-  const session = r.data.session;
+  var session = r.data.session;
   if(session){
-    const name = (session.user.user_metadata && session.user.user_metadata.full_name) ? session.user.user_metadata.full_name : session.user.email.split('@')[0];
+    var name = (session.user.user_metadata && session.user.user_metadata.full_name) ? session.user.user_metadata.full_name : session.user.email.split('@')[0];
     document.getElementById('user-name').textContent = 'Hi, ' + name;
   }
 });
