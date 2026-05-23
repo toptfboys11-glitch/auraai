@@ -239,7 +239,7 @@ window.signIn = async function() {
   setLoading('login-btn', false);
 
   if (error) return showError(error.message);
-  window.location.href = 'index.html';
+  window.location.href = 'tool.html';
 };
 
 window.signInWithGoogle = async function() {
@@ -263,7 +263,7 @@ window.resetPassword = async function() {
 
 // Check if already logged in
 supabase.auth.getSession().then(({ data: { session } }) => {
-  if (session) window.location.href = 'index.html';
+  if (session) window.location.href = 'tool.html';
 });
 </script>
 </body>

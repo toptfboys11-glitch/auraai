@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReplyPro AI — Generate Reply</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#fff;--bg2:#f9f9fb;--bg3:#f3f4f6;--ink:#111827;--ink2:#374151;--muted:#6b7280;--muted2:#9ca3af;--blue:#2563eb;--blue2:#1d4ed8;--green:#16a34a;--border:#e5e7eb;--border2:#d1d5db;--wa-bg:#e5ddd5;--wa-bubble:#dcf8c6;--wa-recv:#fff;--wa-dark:#128c7e;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg2);color:var(--ink);font-family:'Inter',-apple-system,sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;}
+a{text-decoration:none;color:inherit;}
+
+nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 1.5rem;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.logo{font-size:16px;font-weight:700;letter-spacing:-0.3px;display:flex;align-items:center;gap:8px;}
+.logo-icon{width:28px;height:28px;background:var(--blue);border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;}
+.nav-user{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);}
+.upgrade-btn{background:var(--blue);color:#fff;border:none;padding:6px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;}
+
+.layout{max-width:1100px;margin:0 auto;padding:2rem 1.5rem;display:grid;grid-template-columns:380px 1fr;gap:1.5rem;align-items:start;}
+
+/* INPUT PANEL */
+.input-panel{background:var(--bg);border:1px solid var(--border);border-radius:14px;overflow:hidden;position:sticky;top:70px;}
+.panel-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);}
+.panel-title{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:2px;}
+.panel-sub{font-size:12px;color:var(--muted);}
+.panel-body{padding:1.25rem 1.5rem;}
+
+.field-label{font-size:12px;font-weight:600;color:var(--ink2);letter-spacing:0.02em;margin-bottom:6px;display:block;}
+textarea{width:100%;border:1px solid var(--border2);border-radius:9px;padding:10px 12px;font-size:13px;font-family:inherit;color:var(--ink);background:var(--bg2);resize:none;outline:none;transition:border 0.15s;line-height:1.65;}
+textarea:focus{border-color:var(--blue);background:var(--bg);}
+textarea::placeholder{color:var(--muted2);}
+select{width:100%;border:1px solid var(--border2);border-radius:9px;padding:9px 12px;font-size:13px;font-family:inherit;color:var(--ink);background:var(--bg2);outline:none;cursor:pointer;transition:border 0.15s;}
+select:focus{border-color:var(--blue);}
+
+.scenario-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem;}
+.chip{padding:5px 12px;border-radius:20px;border:1px solid var(--border2);background:var(--bg2);font-size:12px;font-weight:500;cursor:pointer;color:var(--muted);transition:all 0.15s;font-family:inherit;}
+.chip.active,.chip:hover{background:var(--blue);color:#fff;border-color:var(--blue);}
+
+.gen-btn{width:100%;background:var(--blue);color:#fff;border:none;padding:12px;border-radius:9px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:1rem;}
+.gen-btn:hover{background:var(--blue2);}
+.gen-btn:disabled{opacity:0.55;cursor:not-allowed;}
+
+.usage-bar-wrap{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);}
+.usage-label{font-size:11px;color:var(--muted);margin-bottom:5px;display:flex;justify-content:space-between;}
+.usage-track{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;}
+.usage-fill{height:100%;background:var(--blue);border-radius:2px;transition:width 0.4s;}
+
+/* OUTPUT PANEL */
+.output-panel{}
+.output-empty{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:4rem 2rem;text-align:center;}
+.empty-icon{font-size:48px;color:var(--muted2);margin-bottom:1rem;}
+.empty-title{font-size:17px;font-weight:600;margin-bottom:6px;}
+.empty-sub{font-size:14px;color:var(--muted);}
+
+/* WHATSAPP PREVIEW */
+.wa-preview{background:var(--bg);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1rem;}
+.wa-preview-header{background:var(--wa-dark);padding:12px 16px;display:flex;align-items:center;gap:10px;}
+.wa-av-sm{width:32px;height:32px;border-radius:50%;background:#5bc8af;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;}
+.wa-cn{font-size:13px;font-weight:600;color:#fff;}
+.wa-cs{font-size:11px;color:rgba(255,255,255,0.6);}
+.wa-chat{background:var(--wa-bg);padding:14px;display:flex;flex-direction:column;gap:8px;}
+.wa-recv-msg{background:var(--wa-recv);border-radius:0 8px 8px 8px;padding:8px 12px;max-width:85%;font-size:13px;line-height:1.65;box-shadow:0 1px 2px rgba(0,0,0,0.08);}
+.wa-time-sm{font-size:10px;color:var(--muted2);padding-left:2px;}
+
+/* REPLY CARDS */
+.reply-cards{display:flex;flex-direction:column;gap:1rem;}
+.reply-card{background:var(--bg);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color 0.15s;}
+.reply-card:hover{border-color:var(--blue);}
+.reply-card-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg2);}
+.reply-badge{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;display:flex;align-items:center;gap:6px;}
+.rb-pro{color:var(--blue);}
+.rb-close{color:var(--green);}
+.rb-nego{color:#d97706;}
+.reply-card-actions{display:flex;gap:6px;}
+.action-btn{padding:5px 12px;border-radius:6px;border:1px solid var(--border2);background:var(--bg);font-size:12px;font-weight:500;cursor:pointer;color:var(--ink2);font-family:inherit;transition:all 0.15s;display:flex;align-items:center;gap:4px;}
+.action-btn:hover{background:var(--blue);color:#fff;border-color:var(--blue);}
+.action-btn.copied{background:#dcfce7;color:var(--green);border-color:#86efac;}
+.reply-card-body{padding:16px;}
+.reply-text{font-size:14px;color:var(--ink2);line-height:1.8;white-space:pre-wrap;}
+
+/* WA BUBBLE PREVIEW inside card */
+.wa-bubble-prev{background:var(--wa-bubble);border-radius:8px 0 8px 8px;padding:10px 14px;font-size:13px;line-height:1.7;color:var(--ink);margin:12px 16px 16px;box-shadow:0 1px 2px rgba(0,0,0,0.08);}
+.wa-bubble-time{font-size:10px;color:var(--muted2);text-align:right;margin-top:4px;}
+
+@keyframes spin{to{transform:rotate(360deg);}}
+.spin{animation:spin 0.8s linear infinite;display:inline-block;}
+
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--ink);color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:500;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:999;}
+.toast.show{opacity:1;}
+
+.divider-field{margin-bottom:1rem;}
+
+@media(max-width:768px){
+  .layout{grid-template-columns:1fr;}
+  .input-panel{position:static;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-icon"><i class="ti ti-message-bolt" style="font-size:14px;"></i></div>
+    Reply<span style="color:var(--blue);">Pro</span> AI
+  </a>
+  <div class="nav-user" id="nav-user">
+    <span id="user-name">Loading...</span>
+    <button class="upgrade-btn" onclick="window.location='pricing.html'">⚡ Upgrade</button>
+  </div>
+</nav>
+
+<div class="layout">
+
+  <!-- INPUT PANEL -->
+  <div class="input-panel">
+    <div class="panel-header">
+      <div class="panel-title">Generate AI Reply</div>
+      <div class="panel-sub">Paste message → Get 3 replies in 10 seconds</div>
+    </div>
+    <div class="panel-body">
+
+      <div class="divider-field">
+        <label class="field-label">Quick scenario</label>
+        <div class="scenario-chips">
+          <button class="chip active" onclick="setChip(this,'price')">💰 Price pressure</button>
+          <button class="chip" onclick="setChip(this,'complaint')">😤 Complaint</button>
+          <button class="chip" onclick="setChip(this,'negotiate')">🤝 Negotiation</button>
+          <button class="chip" onclick="setChip(this,'followup')">📬 Follow-up</button>
+          <button class="chip" onclick="setChip(this,'inquiry')">🆕 New inquiry</button>
+        </div>
+      </div>
+
+      <div class="divider-field">
+        <label class="field-label">Customer message</label>
+        <textarea id="customer-msg" rows="6" placeholder="Paste your customer's WhatsApp or email message here...">Hi, your price is too high. We found another supplier offering 20% cheaper. Can you match their price? We want to place 1,000 units if the price is right.</textarea>
+      </div>
+
+      <div class="divider-field">
+        <label class="field-label">Your industry</label>
+        <select id="industry">
+          <option value="general export">General export / trading</option>
+          <option value="textile and apparel">Textile & apparel</option>
+          <option value="electronics and tech">Electronics & tech</option>
+          <option value="machinery and equipment">Machinery & equipment</option>
+          <option value="food and agriculture">Food & agriculture</option>
+          <option value="furniture and home">Furniture & home goods</option>
+          <option value="chemicals and materials">Chemicals & materials</option>
+          <option value="automotive parts">Automotive parts</option>
+        </select>
+      </div>
+
+      <div class="divider-field">
+        <label class="field-label">Reply channel</label>
+        <select id="channel">
+          <option value="WhatsApp">WhatsApp (casual-professional)</option>
+          <option value="email">Email (formal)</option>
+        </select>
+      </div>
+
+      <button class="gen-btn" id="gen-btn" onclick="generate()">
+        <i class="ti ti-sparkles"></i> Generate 3 replies
+      </button>
+
+      <div class="usage-bar-wrap">
+        <div class="usage-label">
+          <span>Daily usage</span>
+          <span id="usage-text">3 / 10 free replies used</span>
+        </div>
+        <div class="usage-track"><div class="usage-fill" id="usage-fill" style="width:30%;"></div></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px;">Upgrade to Pro for unlimited replies →</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- OUTPUT PANEL -->
+  <div id="output-area">
+    <div class="output-empty">
+      <div class="empty-icon"><i class="ti ti-message-dots"></i></div>
+      <div class="empty-title">Your replies will appear here</div>
+      <div class="empty-sub">Fill in the customer message and click Generate</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast">Copied to clipboard ✓</div>
+
+<script>
+const presets = {
+  price: "Hi, your price is too high. We found another supplier offering 20% cheaper. Can you match their price? We want to place 1,000 units if the price is right.",
+  complaint: "We received the shipment but the quality is not what we expected. Some items are damaged and colors are different from samples. This is a serious issue.",
+  negotiate: "We are interested but the MOQ is too high for us. Can you lower it to 200 units for the first order? We are a small company but we plan to grow.",
+  followup: "Hi, I sent you a message 5 days ago about pricing and MOQ but haven't heard back. Are you still interested in working with us?",
+  inquiry: "Hello, we found your company online. We are looking for a reliable supplier for import. Can you send us your catalog, MOQ and payment terms?"
+};
+
+function setChip(btn, type) {
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('customer-msg').value = presets[type];
+}
+
+let usageCount = 3;
+
+async function generate() {
+  const msg = document.getElementById('customer-msg').value.trim();
+  const industry = document.getElementById('industry').value;
+  const channel = document.getElementById('channel').value;
+  if (!msg) { document.getElementById('customer-msg').focus(); return; }
+
+  const btn = document.getElementById('gen-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader spin"></i> Generating...';
+
+  document.getElementById('output-area').innerHTML = `
+    <div class="output-empty">
+      <div class="empty-icon"><i class="ti ti-loader spin" style="font-size:40px;color:var(--blue);"></i></div>
+      <div class="empty-title">Writing your replies...</div>
+      <div class="empty-sub">This takes about 10 seconds</div>
+    </div>`;
+
+  const prompt = `You are a senior export sales manager with 10+ years of experience in international trade (${industry} industry).
+
+Customer ${channel} message: "${msg}"
+
+Write exactly 3 different replies. CRITICAL RULES:
+- Natural human tone, NOT AI-like. Sound like a real person.
+- Short and professional: 3-5 sentences max each
+- Focus on closing deals and maintaining relationships
+- No exaggeration, no marketing language
+- No "I hope this message finds you well" or similar clichés
+- Adapted for ${channel} communication style
+
+Format EXACTLY like this:
+
+[PROFESSIONAL]
+Write reply 1 here
+
+[CLOSING]
+Write reply 2 here
+
+[NEGOTIATION]
+Write reply 3 here
+
+Rules by situation:
+- Price inquiry/pressure → emphasize value + subtle closing push
+- Complaint → calm tone, solution-first, protect relationship
+- Negotiating → flexible but firm, hold margin with confidence
+- Follow-up → reopen conversation naturally, not desperate
+- New inquiry → warm, efficient, ask qualifying question`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.[0]?.text || '';
+
+    const pro = text.match(/\[PROFESSIONAL\]([\s\S]*?)(?=\[CLOSING\])/)?.[1]?.trim() || '';
+    const close = text.match(/\[CLOSING\]([\s\S]*?)(?=\[NEGOTIATION\])/)?.[1]?.trim() || '';
+    const nego = text.match(/\[NEGOTIATION\]([\s\S]*?)$/)?.[1]?.trim() || '';
+
+    usageCount++;
+    const pct = Math.min((usageCount/10)*100, 100);
+    document.getElementById('usage-text').textContent = `${usageCount} / 10 free replies used`;
+    document.getElementById('usage-fill').style.width = pct + '%';
+
+    const now = new Date();
+    const timeStr = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+
+    document.getElementById('output-area').innerHTML = `
+      <div class="wa-preview">
+        <div class="wa-preview-header">
+          <div class="wa-av-sm">C</div>
+          <div>
+            <div class="wa-cn">Customer message</div>
+            <div class="wa-cs">${channel} · ${industry}</div>
+          </div>
+        </div>
+        <div class="wa-chat">
+          <div class="wa-recv-msg">${msg}</div>
+          <div class="wa-time-sm">${timeStr}</div>
+        </div>
+      </div>
+
+      <div class="reply-cards">
+        <div class="reply-card">
+          <div class="reply-card-header">
+            <div class="reply-badge rb-pro"><i class="ti ti-briefcase" style="font-size:12px;"></i> Professional reply</div>
+            <div class="reply-card-actions">
+              <button class="action-btn" onclick="copyReply('pro-text', this)"><i class="ti ti-copy" style="font-size:13px;"></i> Copy</button>
+            </div>
+          </div>
+          <div class="reply-card-body">
+            <div class="reply-text" id="pro-text">${pro}</div>
+          </div>
+          <div class="wa-bubble-prev">${pro}<div class="wa-bubble-time">${timeStr} ✓✓</div></div>
+        </div>
+
+        <div class="reply-card">
+          <div class="reply-card-header">
+            <div class="reply-badge rb-close"><i class="ti ti-target" style="font-size:12px;"></i> Closing-oriented reply</div>
+            <div class="reply-card-actions">
+              <button class="action-btn" onclick="copyReply('close-text', this)"><i class="ti ti-copy" style="font-size:13px;"></i> Copy</button>
+            </div>
+          </div>
+          <div class="reply-card-body">
+            <div class="reply-text" id="close-text">${close}</div>
+          </div>
+          <div class="wa-bubble-prev">${close}<div class="wa-bubble-time">${timeStr} ✓✓</div></div>
+        </div>
+
+        <div class="reply-card">
+          <div class="reply-card-header">
+            <div class="reply-badge rb-nego"><i class="ti ti-handshake" style="font-size:12px;"></i> Soft negotiation reply</div>
+            <div class="reply-card-actions">
+              <button class="action-btn" onclick="copyReply('nego-text', this)"><i class="ti ti-copy" style="font-size:13px;"></i> Copy</button>
+            </div>
+          </div>
+          <div class="reply-card-body">
+            <div class="reply-text" id="nego-text">${nego}</div>
+          </div>
+          <div class="wa-bubble-prev">${nego}<div class="wa-bubble-time">${timeStr} ✓✓</div></div>
+        </div>
+      </div>`;
+
+  } catch(e) {
+    document.getElementById('output-area').innerHTML = `<div class="output-empty"><div class="empty-title">Something went wrong</div><div class="empty-sub">Please try again</div></div>`;
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="ti ti-sparkles"></i> Generate 3 replies';
+}
+
+function copyReply(id, btn) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text);
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'), 2000);
+  btn.classList.add('copied');
+  btn.innerHTML = '<i class="ti ti-check" style="font-size:13px;"></i> Copied!';
+  setTimeout(()=>{
+    btn.classList.remove('copied');
+    btn.innerHTML = '<i class="ti ti-copy" style="font-size:13px;"></i> Copy';
+  }, 2500);
+}
+</script>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+const sb = createClient('https://svuhyxxsfgujosmxejyy.supabase.co','sb_publishable_pJMBD68Lm3caEZqI02cg4A_cNbrFu5q');
+sb.auth.getSession().then(({data:{session}})=>{
+  if(!session){ window.location='login.html'; return; }
+  const name = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
+  document.getElementById('user-name').textContent = 'Hi, ' + name;
+});
+</script>
+</body>
+</html>
