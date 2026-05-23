@@ -152,7 +152,8 @@ select:focus{border-color:var(--blue);}
 
 <script>
 // ── CONFIG ──────────────────────────────────────────
-const ANTHROPIC_KEY = 'sk-ant-api03-placeholder-replace-this';
+const GEMINI_KEY = 'AIzaSyACf5S3ccIRIQeAFatcMH0C3FN3vHrTJ2I';
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + GEMINI_KEY;
 // ────────────────────────────────────────────────────
 
 const presets = {
@@ -184,23 +185,17 @@ function generate() {
 
   var prompt = 'You are a senior export sales manager with 10+ years experience in ' + industry + '.\n\nCustomer ' + channel + ' message: "' + msg + '"\n\nWrite 3 different replies. Rules:\n- Natural human tone, NOT robotic\n- 3 to 5 sentences each\n- No cliches\n- Sound like a real salesperson\n\nUse EXACTLY this format:\n\n[PROFESSIONAL]\nReply 1 here.\n\n[CLOSING]\nReply 2 here.\n\n[NEGOTIATION]\nReply 3 here.';
 
-  fetch('https://api.anthropic.com/v1/messages', {
+  fetch(GEMINI_URL, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': ANTHROPIC_KEY,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1000,
-      messages: [{ role: 'user', content: prompt }]
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { maxOutputTokens: 1000, temperature: 0.7 }
     })
   })
   .then(function(res){ return res.json(); })
   .then(function(data) {
-    var raw = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text : '';
+    var raw = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) ? data.candidates[0].content.parts[0].text : '';
     console.log('Got response, length:', raw.length);
 
     function extract(label) {
