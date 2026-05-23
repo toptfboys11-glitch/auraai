@@ -1,6 +1,5 @@
 {
   "rewrites": [
-    { "source": "/api/reply", "destination": "/api/reply.js" },
     { "source": "/", "destination": "/index.html" },
     { "source": "/login", "destination": "/login.html" },
     { "source": "/tool", "destination": "/tool.html" },

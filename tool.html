@@ -185,17 +185,15 @@ function generate() {
 
   var prompt = 'You are a senior export sales manager with 10+ years experience in ' + industry + '.\n\nCustomer ' + channel + ' message: "' + msg + '"\n\nWrite 3 different replies. Rules:\n- Natural human tone, NOT robotic\n- 3 to 5 sentences each\n- No cliches\n- Sound like a real salesperson\n\nUse EXACTLY this format:\n\n[PROFESSIONAL]\nReply 1 here.\n\n[CLOSING]\nReply 2 here.\n\n[NEGOTIATION]\nReply 3 here.';
 
-  fetch(GEMINI_URL, {
+  fetch('/api/reply', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { maxOutputTokens: 1000, temperature: 0.7 }
-    })
+    body: JSON.stringify({ msg: msg, industry: industry, channel: channel })
   })
   .then(function(res){ return res.json(); })
   .then(function(data) {
-    var raw = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) ? data.candidates[0].content.parts[0].text : '';
+    if (data.error) throw new Error(data.error);
+    var raw = data.text || '';
     console.log('Got response, length:', raw.length);
 
     function extract(label) {

@@ -1,75 +1,57 @@
-export const config = { runtime: 'edge' };
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-export default async function handler(req) {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      }
-    });
-  }
-
-  if (req.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405 });
-  }
+  if (req.method === 'OPTIONS') { return res.status(200).end(); }
+  if (req.method !== 'POST') { return res.status(405).json({ error: 'Method not allowed' }); }
 
   try {
-    const body = await req.json();
-    const { msg, industry, channel } = body;
-
+    const { msg, industry, channel } = req.body;
+    const GEMINI_KEY = 'AIzaSyBKhAFgwHr_2kBQwWVvLyyuJ_0BeAEltdc';
+    
     const prompt = `You are a senior export sales manager with 10+ years experience in ${industry}.
 
 Customer ${channel} message: "${msg}"
 
-Write 3 different replies. Follow these rules strictly:
-- Natural human tone, NOT robotic or AI-sounding
+Write 3 different replies. Rules:
+- Natural human tone, NOT robotic
 - 3 to 5 sentences each
-- No "I hope this finds you well" or clichés
-- Sound like a real experienced salesperson
+- No cliches like "I hope this finds you well"
+- Sound like a real salesperson
 
-Reply format - use EXACTLY these markers on their own line:
+Use EXACTLY this format:
 
 [PROFESSIONAL]
-Write reply 1 here.
+Reply 1 here.
 
 [CLOSING]
-Write reply 2 here.
+Reply 2 here.
 
 [NEGOTIATION]
-Write reply 3 here.`;
+Reply 3 here.`;
 
-    const apiRes = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-
-    const data = await apiRes.json();
-    const text = data.content?.[0]?.text || '';
-
-    return new Response(JSON.stringify({ text }), {
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${GEMINI_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { maxOutputTokens: 1000, temperature: 0.7 }
+        })
       }
-    });
-  } catch(e) {
-    return new Response(JSON.stringify({ error: e.message }), {
-      status: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      }
-    });
+    );
+
+    const data = await response.json();
+    console.log('Gemini status:', response.status);
+    console.log('Gemini data:', JSON.stringify(data).substring(0, 300));
+
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    return res.status(200).json({ text });
+
+  } catch (e) {
+    console.error('Error:', e);
+    return res.status(500).json({ error: e.message });
   }
 }
