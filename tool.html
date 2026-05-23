@@ -271,16 +271,27 @@ Rules by situation:
     const data = await res.json();
     const text = data.content?.[0]?.text || '';
 
-    // Parse 3 reply sections
-    const sections = text.split(/\[(?:PROFESSIONAL|CLOSING|NEGOTIATION)\]/i).slice(1);
-    const labelMatches = text.match(/\[(?:PROFESSIONAL|CLOSING|NEGOTIATION)\]/gi) || [];
-    const parsed = {};
-    labelMatches.forEach((lbl, i) => {
-      parsed[lbl.replace(/[\[\]]/g,'').toUpperCase()] = (sections[i] || '').trim();
-    });
-    const pro = parsed['PROFESSIONAL'] || '';
-    const replyClose = parsed['CLOSING'] || '';
-    const nego = parsed['NEGOTIATION'] || '';
+    // Parse 3 reply sections - robust method
+    console.log('RAW TEXT:', text.substring(0, 500));
+    
+    function extractSection(txt, label) {
+      const regex = new RegExp('\\[' + label + '\\][\\s\\S]*?\\n([\\s\\S]*?)(?=\\[(?:PROFESSIONAL|CLOSING|NEGOTIATION)\\]|$)', 'i');
+      const m = txt.match(regex);
+      if (m) return m[1].trim();
+      // fallback: everything after the label until next label
+      const idx = txt.toUpperCase().indexOf('[' + label + ']');
+      if (idx === -1) return '';
+      const afterLabel = txt.slice(idx + label.length + 2).trim();
+      const nextLabel = afterLabel.search(/\[(?:PROFESSIONAL|CLOSING|NEGOTIATION)\]/i);
+      return (nextLabel === -1 ? afterLabel : afterLabel.slice(0, nextLabel)).trim();
+    }
+    
+    const pro = extractSection(text, 'PROFESSIONAL');
+    const replyClose = extractSection(text, 'CLOSING');
+    const nego = extractSection(text, 'NEGOTIATION');
+    console.log('PARSED pro:', pro.substring(0,80));
+    console.log('PARSED close:', replyClose.substring(0,80));
+    console.log('PARSED nego:', nego.substring(0,80));
 
     usageCount++;
     const pct = Math.min((usageCount/10)*100, 100);
@@ -290,7 +301,9 @@ Rules by situation:
     const now = new Date();
     const timeStr = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
 
-    document.getElementById('output-area').innerHTML = `
+    // Build output using DOM to avoid template literal escaping issues
+    const outputArea = document.getElementById('output-area');
+    outputArea.innerHTML = `
       <div class="wa-preview">
         <div class="wa-preview-header">
           <div class="wa-av-sm">C</div>
@@ -300,11 +313,10 @@ Rules by situation:
           </div>
         </div>
         <div class="wa-chat">
-          <div class="wa-recv-msg">${msg}</div>
+          <div class="wa-recv-msg" id="msg-display"></div>
           <div class="wa-time-sm">${timeStr}</div>
         </div>
       </div>
-
       <div class="reply-cards">
         <div class="reply-card">
           <div class="reply-card-header">
@@ -313,12 +325,9 @@ Rules by situation:
               <button class="action-btn" onclick="copyReply('pro-text', this)"><i class="ti ti-copy" style="font-size:13px;"></i> Copy</button>
             </div>
           </div>
-          <div class="reply-card-body">
-            <div class="reply-text" id="pro-text">${pro}</div>
-          </div>
-          <div class="wa-bubble-prev">${pro}<div class="wa-bubble-time">${timeStr} ✓✓</div></div>
+          <div class="reply-card-body"><div class="reply-text" id="pro-text"></div></div>
+          <div class="wa-bubble-prev" id="pro-bubble"></div>
         </div>
-
         <div class="reply-card">
           <div class="reply-card-header">
             <div class="reply-badge rb-close"><i class="ti ti-target" style="font-size:12px;"></i> Closing-oriented reply</div>
@@ -326,12 +335,9 @@ Rules by situation:
               <button class="action-btn" onclick="copyReply('close-text', this)"><i class="ti ti-copy" style="font-size:13px;"></i> Copy</button>
             </div>
           </div>
-          <div class="reply-card-body">
-            <div class="reply-text" id="close-text">${replyClose}</div>
-          </div>
-          <div class="wa-bubble-prev">${replyClose}<div class="wa-bubble-time">${timeStr} ✓✓</div></div>
+          <div class="reply-card-body"><div class="reply-text" id="close-text"></div></div>
+          <div class="wa-bubble-prev" id="close-bubble"></div>
         </div>
-
         <div class="reply-card">
           <div class="reply-card-header">
             <div class="reply-badge rb-nego"><i class="ti ti-handshake" style="font-size:12px;"></i> Soft negotiation reply</div>
@@ -339,12 +345,24 @@ Rules by situation:
               <button class="action-btn" onclick="copyReply('nego-text', this)"><i class="ti ti-copy" style="font-size:13px;"></i> Copy</button>
             </div>
           </div>
-          <div class="reply-card-body">
-            <div class="reply-text" id="nego-text">${nego}</div>
-          </div>
-          <div class="wa-bubble-prev">${nego}<div class="wa-bubble-time">${timeStr} ✓✓</div></div>
+          <div class="reply-card-body"><div class="reply-text" id="nego-text"></div></div>
+          <div class="wa-bubble-prev" id="nego-bubble"></div>
         </div>
       </div>`;
+
+    // Set text content safely (avoids HTML injection / escaping issues)
+    document.getElementById('msg-display').textContent = msg;
+    document.getElementById('pro-text').textContent = pro;
+    document.getElementById('close-text').textContent = replyClose;
+    document.getElementById('nego-text').textContent = nego;
+    
+    const timeEl = `<div class="wa-bubble-time">${timeStr} ✓✓</div>`;
+    document.getElementById('pro-bubble').textContent = pro;
+    document.getElementById('pro-bubble').insertAdjacentHTML('beforeend', timeEl);
+    document.getElementById('close-bubble').textContent = replyClose;
+    document.getElementById('close-bubble').insertAdjacentHTML('beforeend', timeEl);
+    document.getElementById('nego-bubble').textContent = nego;
+    document.getElementById('nego-bubble').insertAdjacentHTML('beforeend', timeEl);
 
   } catch(e) {
     document.getElementById('output-area').innerHTML = `<div class="output-empty"><div class="empty-title">Something went wrong</div><div class="empty-sub">Please try again</div></div>`;
@@ -373,9 +391,12 @@ function copyReply(id, btn) {
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 const sb = createClient('https://svuhyxxsfgujosmxejyy.supabase.co','sb_publishable_pJMBD68Lm3caEZqI02cg4A_cNbrFu5q');
 sb.auth.getSession().then(({data:{session}})=>{
-  if(!session){ window.location='login.html'; return; }
-  const name = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
-  document.getElementById('user-name').textContent = 'Hi, ' + name;
+  if(session){
+    const name = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
+    document.getElementById('user-name').textContent = 'Hi, ' + name;
+  } else {
+    document.getElementById('user-name').textContent = 'Guest';
+  }
 });
 </script>
 </body>
