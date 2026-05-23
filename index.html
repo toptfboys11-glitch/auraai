@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AuraAI — Your AI Toolkit That Actually Works</title>
+<meta name="description" content="10+ AI tools in one place. Write, translate, analyze, plan trips — no tab-switching, no subscriptions to a dozen apps.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Instrument+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#f7f5f0;--surface:#fff;--ink:#0f0e0c;--muted:#6b6860;--lime:#c8f135;--border:rgba(15,14,12,0.1);}
+body{background:var(--bg);color:var(--ink);font-family:'Instrument Sans',sans-serif;font-size:15px;line-height:1.6;overflow-x:hidden;}
+a{text-decoration:none;color:inherit;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 2.5rem;background:var(--bg);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.logo{font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:20px;letter-spacing:-1px;}
+.logo span{background:var(--ink);color:var(--lime);padding:1px 6px;border-radius:4px;margin-left:1px;}
+.nav-links{display:flex;gap:2rem;list-style:none;}
+.nav-links a{color:var(--muted);font-size:14px;transition:color 0.2s;}
+.nav-links a:hover{color:var(--ink);}
+.nav-right{display:flex;align-items:center;gap:1rem;}
+.nav-cta{background:var(--ink);color:var(--lime);border:none;padding:0.6rem 1.4rem;border-radius:6px;font-family:'Instrument Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:opacity 0.2s;}
+.nav-cta:hover{opacity:0.85;}
+.hero{padding:5rem 2.5rem 4rem;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:var(--lime);color:var(--ink);font-size:12px;font-weight:600;padding:5px 14px;border-radius:4px;margin-bottom:1.75rem;letter-spacing:0.5px;text-transform:uppercase;}
+h1{font-family:'Cabinet Grotesk',sans-serif;font-size:clamp(36px,5vw,56px);font-weight:900;line-height:1.05;letter-spacing:-2px;margin-bottom:1.5rem;}
+h1 .ul{text-decoration:underline;text-decoration-color:var(--lime);text-decoration-thickness:4px;text-underline-offset:6px;}
+.hero-desc{font-size:17px;color:var(--muted);max-width:420px;line-height:1.7;margin-bottom:2.5rem;font-weight:300;}
+.hero-btns{display:flex;gap:0.75rem;flex-wrap:wrap;}
+.btn-dark{background:var(--ink);color:#fff;border:none;padding:0.9rem 2rem;border-radius:8px;font-family:'Instrument Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:8px;}
+.btn-dark:hover{opacity:0.85;transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--border);padding:0.9rem 2rem;border-radius:8px;font-family:'Instrument Sans',sans-serif;font-size:15px;cursor:pointer;transition:all 0.2s;}
+.btn-ghost:hover{background:var(--surface);}
+.hero-trust{display:flex;align-items:center;gap:10px;margin-top:2rem;font-size:13px;color:var(--muted);}
+.avatars{display:flex;}
+.av{width:28px;height:28px;border-radius:50%;border:2px solid var(--bg);margin-left:-8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;}
+.av:first-child{margin-left:0;}
+.av-1{background:#7c6dfa;}.av-2{background:#f97316;}.av-3{background:#22d3ee;}.av-4{background:#ec4899;}
+.hero-right{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;box-shadow:0 4px 40px rgba(0,0,0,0.06);}
+.preview-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;}
+.preview-title{font-family:'Cabinet Grotesk',sans-serif;font-weight:700;font-size:15px;}
+.preview-badge{background:#edffd6;color:#3a7c00;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;}
+.preview-tool{background:var(--bg);border-radius:10px;padding:1rem;margin-bottom:0.75rem;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background 0.15s;}
+.preview-tool:hover{background:#ebe8e0;}
+.preview-tool-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.pi-1{background:#eeedfe;color:#7c6dfa;}.pi-2{background:#fef3e2;color:#f97316;}.pi-3{background:#e0fdf4;color:#10b981;}
+.preview-tool-name{font-size:13px;font-weight:500;margin-bottom:2px;}
+.preview-tool-meta{font-size:11px;color:var(--muted);}
+.preview-stat-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:1rem;}
+.preview-stat{background:var(--bg);border-radius:8px;padding:0.75rem;text-align:center;}
+.preview-stat-num{font-family:'Cabinet Grotesk',sans-serif;font-size:18px;font-weight:800;letter-spacing:-0.5px;}
+.preview-stat-label{font-size:10px;color:var(--muted);margin-top:2px;}
+.marquee-section{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1rem 0;overflow:hidden;background:var(--ink);}
+.marquee-track{display:flex;gap:3rem;animation:marquee 20s linear infinite;white-space:nowrap;}
+@keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+.marquee-item{font-family:'Cabinet Grotesk',sans-serif;font-size:14px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:1rem;flex-shrink:0;}
+.marquee-dot{color:var(--lime);}
+.tools-section{padding:5rem 2.5rem;max-width:1100px;margin:0 auto;}
+.section-eyebrow{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:0.75rem;}
+.section-h2{font-family:'Cabinet Grotesk',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:900;letter-spacing:-1.5px;margin-bottom:0.75rem;line-height:1.1;}
+.section-sub{color:var(--muted);max-width:440px;margin-bottom:3rem;font-weight:300;}
+.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+.tool-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;cursor:pointer;transition:all 0.2s;position:relative;}
+.tool-card:hover{border-color:rgba(15,14,12,0.25);transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,0.07);}
+.tool-card.featured-tool{background:var(--ink);border-color:var(--ink);color:#fff;grid-column:span 2;}
+.tool-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:1rem;}
+.ti-purple{background:#eeedfe;color:#7c6dfa;}.ti-orange{background:#fef3e2;color:#f97316;}
+.ti-teal{background:#e0fdf4;color:#10b981;}.ti-pink{background:#fce7f3;color:#ec4899;}
+.ti-blue{background:#eff6ff;color:#3b82f6;}.ti-dark{background:rgba(200,241,53,0.15);color:var(--lime);}
+.tool-name{font-family:'Cabinet Grotesk',sans-serif;font-size:16px;font-weight:800;letter-spacing:-0.5px;margin-bottom:0.4rem;}
+.tool-desc{font-size:13px;color:var(--muted);line-height:1.6;}
+.featured-tool .tool-desc{color:rgba(255,255,255,0.55);}
+.tool-chip{display:inline-block;background:var(--lime);color:var(--ink);font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;margin-bottom:0.75rem;text-transform:uppercase;letter-spacing:0.5px;}
+.featured-tool .tool-chip{background:rgba(200,241,53,0.2);color:var(--lime);}
+.pricing-section{padding:5rem 2.5rem;background:var(--ink);color:#fff;}
+.pricing-inner{max-width:1000px;margin:0 auto;}
+.pricing-section .section-eyebrow{color:rgba(255,255,255,0.4);}
+.pricing-section .section-sub{color:rgba(255,255,255,0.5);}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:3rem;}
+.price-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:2rem;transition:transform 0.2s;position:relative;}
+.price-card:hover{transform:translateY(-3px);}
+.price-card.best{background:var(--lime);border-color:var(--lime);color:var(--ink);}
+.plan-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,0.5);margin-bottom:1.25rem;}
+.best .plan-label{color:rgba(15,14,12,0.5);}
+.plan-price{font-family:'Cabinet Grotesk',sans-serif;font-size:48px;font-weight:900;letter-spacing:-3px;line-height:1;margin-bottom:0.25rem;}
+.plan-per{font-size:14px;color:rgba(255,255,255,0.4);margin-bottom:1.5rem;}
+.best .plan-per{color:rgba(15,14,12,0.5);}
+.plan-divider{border:none;border-top:1px solid rgba(255,255,255,0.1);margin:1.25rem 0;}
+.best .plan-divider{border-color:rgba(15,14,12,0.15);}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:0.6rem;margin-bottom:2rem;}
+.plan-features li{font-size:13px;display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.65);}
+.best .plan-features li{color:rgba(15,14,12,0.7);}
+.plan-features li.on{color:rgba(255,255,255,0.9);}
+.best .plan-features li.on{color:var(--ink);}
+.ck{color:var(--lime);font-weight:700;}.best .ck{color:var(--ink);}
+.cx{color:rgba(255,255,255,0.2);}
+.pbtn{width:100%;padding:0.8rem;border-radius:8px;font-family:'Instrument Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all 0.2s;}
+.pbtn-light{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.15);}
+.pbtn-light:hover{background:rgba(255,255,255,0.18);}
+.pbtn-dark{background:var(--ink);color:var(--lime);font-weight:700;}
+.pbtn-dark:hover{opacity:0.88;}
+.reviews-section{padding:4rem 2.5rem;max-width:1100px;margin:0 auto;}
+.reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2.5rem;}
+.review-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;}
+.stars{color:#f59e0b;font-size:13px;margin-bottom:0.75rem;}
+.review-text{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:1rem;font-style:italic;}
+.reviewer{display:flex;align-items:center;gap:10px;}
+.reviewer-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;}
+.reviewer-name{font-size:13px;font-weight:500;}
+.reviewer-role{font-size:11px;color:var(--muted);}
+.cta-strip{margin:0 2.5rem 4rem;background:var(--lime);border-radius:16px;padding:3rem;display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap;}
+.cta-strip h3{font-family:'Cabinet Grotesk',sans-serif;font-size:28px;font-weight:900;letter-spacing:-1px;color:var(--ink);max-width:400px;line-height:1.2;}
+.cta-strip-btn{background:var(--ink);color:var(--lime);border:none;padding:0.9rem 2rem;border-radius:8px;font-family:'Instrument Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap;transition:opacity 0.2s;}
+.cta-strip-btn:hover{opacity:0.85;}
+footer{border-top:1px solid var(--border);padding:2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
+.footer-logo{font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:16px;}
+.footer-logo span{background:var(--ink);color:var(--lime);padding:1px 5px;border-radius:3px;margin-left:1px;}
+.footer-links{display:flex;gap:1.5rem;list-style:none;}
+.footer-links a{font-size:13px;color:var(--muted);}
+.footer-links a:hover{color:var(--ink);}
+.footer-copy{font-size:12px;color:var(--muted);}
+@media(max-width:768px){
+  .hero{grid-template-columns:1fr;gap:2rem;}
+  .hero-right{display:none;}
+  .tools-grid{grid-template-columns:1fr;}
+  .tool-card.featured-tool{grid-column:span 1;}
+  .pricing-grid{grid-template-columns:1fr;}
+  .reviews-grid{grid-template-columns:1fr;}
+  nav .nav-links{display:none;}
+}
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">Aura<span>AI</span></div>
+  <ul class="nav-links">
+    <li><a href="#tools">Tools</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="privacy.html">Privacy</a></li>
+    <li><a href="terms.html">Terms</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="login.html" style="font-size:14px;color:var(--muted);">Sign in</a>
+    <a href="pricing.html"><button class="nav-cta">Get started free →</button></a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-tag">✦ Powered by GPT-4o + Claude</div>
+    <h1>Your AI<br>toolkit that<br><span class="ul">actually works</span></h1>
+    <p class="hero-desc">10+ AI tools in one place. Write, translate, analyze, plan trips — no tab-switching, no subscriptions to a dozen apps.</p>
+    <div class="hero-btns">
+      <a href="pricing.html"><button class="btn-dark">Start for free →</button></a>
+      <a href="#tools"><button class="btn-ghost">See the tools</button></a>
+    </div>
+    <div class="hero-trust">
+      <div class="avatars">
+        <div class="av av-1">MR</div><div class="av av-2">JL</div>
+        <div class="av av-3">SK</div><div class="av av-4">AT</div>
+      </div>
+      Trusted by 50,000+ creators & freelancers worldwide
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="preview-header">
+      <div class="preview-title">Your workspace</div>
+      <div class="preview-badge">● Live</div>
+    </div>
+    <div class="preview-tool">
+      <div class="preview-tool-icon pi-1"><i class="ti ti-pencil"></i></div>
+      <div><div class="preview-tool-name">AI Writer</div><div class="preview-tool-meta">Blog posts, emails, ad copy</div></div>
+    </div>
+    <div class="preview-tool">
+      <div class="preview-tool-icon pi-2"><i class="ti ti-world"></i></div>
+      <div><div class="preview-tool-name">Translator Pro</div><div class="preview-tool-meta">100+ languages supported</div></div>
+    </div>
+    <div class="preview-tool">
+      <div class="preview-tool-icon pi-3"><i class="ti ti-map"></i></div>
+      <div><div class="preview-tool-name">Trip Planner</div><div class="preview-tool-meta">Full itinerary in 30 seconds</div></div>
+    </div>
+    <div class="preview-stat-row">
+      <div class="preview-stat"><div class="preview-stat-num">12</div><div class="preview-stat-label">AI tools</div></div>
+      <div class="preview-stat"><div class="preview-stat-num">∞</div><div class="preview-stat-label">Usage</div></div>
+      <div class="preview-stat"><div class="preview-stat-num">4.9★</div><div class="preview-stat-label">Rating</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="marquee-section">
+  <div class="marquee-track">
+    <div class="marquee-item">AI Writing <span class="marquee-dot">✦</span></div>
+    <div class="marquee-item">Resume Builder <span class="marquee-dot">✦</span></div>
+    <div class="marquee-item">Trip Planner <span class="marquee-dot">✦</span></div>
+    <div class="marquee-item">Email Assistant <span class="marquee-dot">✦</span></div>
+    <div class="marquee-item">Data Analysis <span class="marquee-dot">✦</span></div>
+    <div class="marquee-item">Translator Pro <span class="marquee-dot">✦</span></div>
+    <div class="marquee-item">SEO Optimizer <span class="marquee-dot">✦</span></div>
+    <div class="marquee-item">Code Helper <span class="marquee-dot">✦</span></div>
+    <div class="marquee-item">AI Writing <span class="marquee-dot">✦</span></div>
+    <div class="marquee-item">Resume Builder <span class="marquee-dot">✦</span></div>
+    <div class="marquee-item">Trip Planner <span class="marquee-dot">✦</span></div>
+    <div class="marquee-item">Email Assistant <span class="marquee-dot">✦</span></div>
+    <div class="marquee-item">Data Analysis <span class="marquee-dot">✦</span></div>
+    <div class="marquee-item">Translator Pro <span class="marquee-dot">✦</span></div>
+    <div class="marquee-item">SEO Optimizer <span class="marquee-dot">✦</span></div>
+    <div class="marquee-item">Code Helper <span class="marquee-dot">✦</span></div>
+  </div>
+</div>
+
+<div class="tools-section" id="tools">
+  <div class="section-eyebrow">What's inside</div>
+  <h2 class="section-h2">12 tools. One subscription.<br>Zero compromises.</h2>
+  <p class="section-sub">Every tool built for real work — not demos. Ship faster, write better, plan smarter.</p>
+  <div class="tools-grid">
+    <div class="tool-card featured-tool">
+      <div class="tool-chip">Most popular</div>
+      <div class="tool-icon ti-dark"><i class="ti ti-pencil"></i></div>
+      <div class="tool-name">AI Writer</div>
+      <div class="tool-desc">Generate blog posts, product descriptions, ad copy, and social content in seconds. 30+ writing styles, SEO-optimized output, and one-click export.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon ti-orange"><i class="ti ti-file-cv"></i></div>
+      <div class="tool-name">Resume Builder</div>
+      <div class="tool-desc">ATS-friendly resumes that get interviews. Paste your experience, get a polished resume in 60 seconds.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-chip">New</div>
+      <div class="tool-icon ti-teal"><i class="ti ti-map"></i></div>
+      <div class="tool-name">Trip Planner</div>
+      <div class="tool-desc">Full day-by-day itineraries with hotels, restaurants, and local tips. Any destination, any duration.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon ti-purple"><i class="ti ti-world"></i></div>
+      <div class="tool-name">Translator Pro</div>
+      <div class="tool-desc">100+ languages with tone preservation. Perfect for businesses going global.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon ti-pink"><i class="ti ti-mail"></i></div>
+      <div class="tool-name">Email Assistant</div>
+      <div class="tool-desc">Smart replies, cold outreach, and follow-ups that actually get responses.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-icon ti-blue"><i class="ti ti-chart-bar"></i></div>
+      <div class="tool-name">Data Analyst</div>
+      <div class="tool-desc">Upload CSV or Excel files. Get instant insights, charts, and summaries.</div>
+    </div>
+  </div>
+</div>
+
+<div class="pricing-section" id="pricing">
+  <div class="pricing-inner">
+    <div class="section-eyebrow">Pricing</div>
+    <h2 class="section-h2" style="color:#fff;">Simple. Transparent.<br>No surprises.</h2>
+    <p class="section-sub">Start free. Upgrade when you're ready. Cancel anytime.</p>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="plan-label">Starter</div>
+        <div class="plan-price">$0</div>
+        <div class="plan-per">forever free</div>
+        <hr class="plan-divider">
+        <ul class="plan-features">
+          <li class="on"><span class="ck">✓</span> 20 uses per day</li>
+          <li class="on"><span class="ck">✓</span> 5 core tools</li>
+          <li class="on"><span class="ck">✓</span> Community support</li>
+          <li><span class="cx">✗</span> Unlimited usage</li>
+          <li><span class="cx">✗</span> All 12 tools</li>
+        </ul>
+        <a href="login.html"><button class="pbtn pbtn-light">Get started free</button></a>
+      </div>
+      <div class="price-card best">
+        <div class="plan-label">Pro — Most popular</div>
+        <div class="plan-price" style="color:var(--ink);">$19</div>
+        <div class="plan-per" style="color:rgba(15,14,12,0.5);">per month</div>
+        <hr class="plan-divider">
+        <ul class="plan-features">
+          <li class="on"><span class="ck">✓</span> Unlimited usage</li>
+          <li class="on"><span class="ck">✓</span> All 12 AI tools</li>
+          <li class="on"><span class="ck">✓</span> Priority support</li>
+          <li class="on"><span class="ck">✓</span> History & exports</li>
+          <li class="on"><span class="ck">✓</span> Early access</li>
+        </ul>
+        <a href="pricing.html"><button class="pbtn pbtn-dark">Start 7-day free trial</button></a>
+      </div>
+      <div class="price-card">
+        <div class="plan-label">Team</div>
+        <div class="plan-price">$49</div>
+        <div class="plan-per">per month, 5 seats</div>
+        <hr class="plan-divider">
+        <ul class="plan-features">
+          <li class="on"><span class="ck">✓</span> Everything in Pro</li>
+          <li class="on"><span class="ck">✓</span> 5 team seats</li>
+          <li class="on"><span class="ck">✓</span> API access</li>
+          <li class="on"><span class="ck">✓</span> Shared workspace</li>
+          <li class="on"><span class="ck">✓</span> Account manager</li>
+        </ul>
+        <a href="pricing.html"><button class="pbtn pbtn-light">Contact sales</button></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="reviews-section">
+  <div class="section-eyebrow">Loved by users</div>
+  <h2 class="section-h2">Real results, real people.</h2>
+  <div class="reviews-grid">
+    <div class="review-card">
+      <div class="stars">★★★★★</div>
+      <div class="review-text">"I cancelled 4 separate subscriptions after switching to AuraAI. The writing tool alone saves me 3 hours a week."</div>
+      <div class="reviewer"><div class="reviewer-av" style="background:#7c6dfa;">SK</div><div><div class="reviewer-name">Sarah K.</div><div class="reviewer-role">Content Strategist, NY</div></div></div>
+    </div>
+    <div class="review-card">
+      <div class="stars">★★★★★</div>
+      <div class="review-text">"The trip planner is unreal. Built a 10-day Japan itinerary in 2 minutes. My travel blog traffic doubled."</div>
+      <div class="reviewer"><div class="reviewer-av" style="background:#f97316;">JL</div><div><div class="reviewer-name">James L.</div><div class="reviewer-role">Travel Blogger, London</div></div></div>
+    </div>
+    <div class="review-card">
+      <div class="stars">★★★★★</div>
+      <div class="review-text">"Best $19/month I spend. The resume builder helped me land 3 new freelance clients this month."</div>
+      <div class="reviewer"><div class="reviewer-av" style="background:#10b981;">AT</div><div><div class="reviewer-name">Alicia T.</div><div class="reviewer-role">Freelance Designer, Toronto</div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="cta-strip">
+  <h3>Stop paying for 6 apps. Get everything in one.</h3>
+  <a href="pricing.html"><button class="cta-strip-btn">Start free today — no credit card →</button></a>
+</div>
+
+<footer>
+  <div class="footer-logo">Aura<span>AI</span></div>
+  <ul class="footer-links">
+    <li><a href="privacy.html">Privacy</a></li>
+    <li><a href="terms.html">Terms</a></li>
+    <li><a href="mailto:hello@xinbuluoplay.com">Contact</a></li>
+  </ul>
+  <div class="footer-copy">© 2026 AuraAI · Built for the world</div>
+</footer>
+</body>
+</html>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+const supabase = createClient(
+  'https://svuhyxxsfgujosmxejyy.supabase.co',
+  'sb_publishable_pJMBD68Lm3caEZqI02cg4A_cNbrFu5q'
+);
+
+async function checkUser() {
+  const { data: { session } } = await supabase.auth.getSession();
+  const navRight = document.querySelector('.nav-right');
+  
+  if (session) {
+    const user = session.user;
+    const name = user.user_metadata?.full_name || user.email.split('@')[0];
+    const avatar = user.user_metadata?.avatar_url;
+    
+    navRight.innerHTML = `
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <a href="tools.html" style="font-size:14px;color:var(--ink);text-decoration:none;font-weight:500;">Dashboard</a>
+        <div style="display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer;" onclick="toggleMenu()">
+          ${avatar ? `<img src="${avatar}" style="width:24px;height:24px;border-radius:50%;">` : `<div style="width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--lime);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;">${name[0].toUpperCase()}</div>`}
+          <span style="font-size:13px;font-weight:500;">${name}</span>
+          <i class="ti ti-chevron-down" style="font-size:12px;color:var(--muted);"></i>
+        </div>
+        <div id="user-menu" style="display:none;position:absolute;top:60px;right:2rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.5rem;box-shadow:0 8px 30px rgba(0,0,0,0.1);z-index:200;min-width:160px;">
+          <div style="padding:0.5rem 0.75rem;font-size:12px;color:var(--muted);border-bottom:1px solid var(--border);margin-bottom:0.25rem;">${user.email}</div>
+          <a href="pricing.html" style="display:block;padding:0.6rem 0.75rem;font-size:13px;color:var(--ink);text-decoration:none;border-radius:6px;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''">⚡ Upgrade to Pro</a>
+          <div style="padding:0.6rem 0.75rem;font-size:13px;color:var(--danger);cursor:pointer;border-radius:6px;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''" onclick="signOut()">Sign out</div>
+        </div>
+      </div>
+    `;
+  }
+}
+
+window.toggleMenu = function() {
+  const menu = document.getElementById('user-menu');
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+};
+
+window.signOut = async function() {
+  await supabase.auth.signOut();
+  window.location.reload();
+};
+
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('user-menu');
+  if (menu && !e.target.closest('[onclick="toggleMenu()"]')) {
+    menu.style.display = 'none';
+  }
+});
+
+checkUser();
+</script>
