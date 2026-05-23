@@ -185,44 +185,15 @@ async function generate() {
 
   document.getElementById('output-area').innerHTML = '<div class="empty-state"><div class="empty-icon"><i class="ti ti-loader spin" style="font-size:36px;color:var(--blue);"></i></div><div class="empty-title">Writing your replies...</div><div class="empty-sub">About 10 seconds</div></div>';
 
-  const prompt = `You are a senior export sales manager with 10+ years experience in ${industry}.
-
-Customer ${channel} message: "${msg}"
-
-Write 3 different replies. Follow these rules strictly:
-- Natural human tone, NOT robotic or AI-sounding
-- 3 to 5 sentences each
-- No "I hope this finds you well" or clichés
-- Sound like a real experienced salesperson
-
-Reply format - use EXACTLY these markers on their own line:
-
-[PROFESSIONAL]
-Write reply 1 here.
-
-[CLOSING]
-Write reply 2 here.
-
-[NEGOTIATION]
-Write reply 3 here.`;
-
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/api/reply', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ msg, industry, channel })
     });
 
     const data = await res.json();
-    const raw = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text : '';
+    const raw = data.text || '';
 
     // Parse sections
     const proMatch = raw.match(/\[PROFESSIONAL\]\s*([\s\S]+?)(?=\[CLOSING\]|\[NEGOTIATION\]|$)/i);
