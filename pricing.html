@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@700;800;900&family=Instrument+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://js.stripe.com/v3/"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{--bg:#f7f5f0;--surface:#fff;--ink:#0f0e0c;--muted:#6b6860;--lime:#c8f135;--border:rgba(15,14,12,0.1);--green:#22c55e;}
@@ -52,8 +53,8 @@ hr{border:none;border-top:1px solid var(--border);margin:1.25rem 0;}
 .pbtn-outline:hover{background:var(--bg);}
 .pbtn-lime{background:var(--lime);color:var(--ink);}
 .pbtn-lime:hover{opacity:0.88;}
+.pbtn:disabled{opacity:0.6;cursor:not-allowed;}
 .guarantee{text-align:center;font-size:13px;color:var(--muted);margin-bottom:4rem;}
-.guarantee i{color:var(--green);}
 .faq{max-width:680px;margin:0 auto 4rem;padding:0 2rem;}
 .faq h2{font-family:'Cabinet Grotesk',sans-serif;font-size:28px;font-weight:900;letter-spacing:-1px;margin-bottom:2rem;text-align:center;}
 .faq-item{border-bottom:1px solid var(--border);padding:1.25rem 0;cursor:pointer;}
@@ -64,6 +65,8 @@ footer{border-top:1px solid var(--border);padding:2rem 2.5rem;display:flex;justi
 .footer-logo{font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:16px;}
 .footer-logo span{background:var(--ink);color:var(--lime);padding:1px 5px;border-radius:3px;margin-left:1px;}
 .footer-copy{font-size:12px;color:var(--muted);}
+@keyframes spin{to{transform:rotate(360deg);}}
+.spin{animation:spin 0.8s linear infinite;display:inline-block;}
 @media(max-width:768px){.pricing-grid{grid-template-columns:1fr;}}
 </style>
 </head>
@@ -100,31 +103,32 @@ footer{border-top:1px solid var(--border);padding:2rem 2.5rem;display:flex;justi
       <li class="on"><span class="ck">✓</span> Community support</li>
       <li><span class="cx">✗</span> Unlimited usage</li>
       <li><span class="cx">✗</span> All 12 tools</li>
-      <li><span class="cx">✗</span> API access</li>
     </ul>
     <a href="login.html"><button class="pbtn pbtn-outline">Get started free</button></a>
   </div>
 
   <div class="price-card best">
     <div class="plan-label">Pro — Most popular</div>
-    <div class="plan-price" id="pro-price">$19</div>
-    <div class="plan-per" id="pro-per">per month</div>
+    <div class="plan-price" id="pro-price" style="color:var(--lime);">$19</div>
+    <div class="plan-per" id="pro-per" style="color:rgba(255,255,255,0.5);">per month</div>
     <hr>
     <ul class="feats">
       <li class="on"><span class="ck">✓</span> Unlimited usage</li>
       <li class="on"><span class="ck">✓</span> All 12 AI tools</li>
       <li class="on"><span class="ck">✓</span> Priority support</li>
       <li class="on"><span class="ck">✓</span> History & exports</li>
-      <li class="on"><span class="ck">✓</span> Early access to new tools</li>
-      <li><span class="cx" style="color:rgba(255,255,255,0.2);">✗</span> Team collaboration</li>
+      <li class="on"><span class="ck">✓</span> Early access</li>
     </ul>
-    <a href="login.html"><button class="pbtn pbtn-lime">Start 7-day free trial</button></a>
+    <button class="pbtn pbtn-lime" id="subscribe-btn" onclick="subscribe()">
+      Start 7-day free trial →
+    </button>
+    <div style="font-size:11px;color:rgba(255,255,255,0.4);text-align:center;margin-top:0.6rem;">No credit card required to start</div>
   </div>
 
   <div class="price-card">
     <div class="plan-label">Team</div>
     <div class="plan-price" id="team-price">$49</div>
-    <div class="plan-per" id="team-per">per month, 5 seats</div>
+    <div class="plan-per">per month, 5 seats</div>
     <hr>
     <ul class="feats">
       <li class="on"><span class="ck">✓</span> Everything in Pro</li>
@@ -132,9 +136,8 @@ footer{border-top:1px solid var(--border);padding:2rem 2.5rem;display:flex;justi
       <li class="on"><span class="ck">✓</span> API access</li>
       <li class="on"><span class="ck">✓</span> Shared workspace</li>
       <li class="on"><span class="ck">✓</span> Account manager</li>
-      <li class="on"><span class="ck">✓</span> Custom integrations</li>
     </ul>
-    <a href="login.html"><button class="pbtn pbtn-outline">Contact sales</button></a>
+    <a href="mailto:hello@artterra1996.com"><button class="pbtn pbtn-outline">Contact sales</button></a>
   </div>
 </div>
 
@@ -146,11 +149,11 @@ footer{border-top:1px solid var(--border);padding:2rem 2.5rem;display:flex;justi
   <h2>Frequently asked questions</h2>
   <div class="faq-item" onclick="toggleFaq(this)">
     <div class="faq-q">Is the free trial really free? <i class="ti ti-chevron-down"></i></div>
-    <div class="faq-a">Yes! No credit card required to start. You get 7 days of full Pro access completely free. We'll remind you before the trial ends.</div>
+    <div class="faq-a">Yes! No credit card required to start. You get 7 days of full Pro access completely free.</div>
   </div>
   <div class="faq-item" onclick="toggleFaq(this)">
     <div class="faq-q">Can I cancel anytime? <i class="ti ti-chevron-down"></i></div>
-    <div class="faq-a">Absolutely. Cancel anytime from your account settings with one click. No questions asked, no cancellation fees.</div>
+    <div class="faq-a">Absolutely. Cancel anytime from your account settings with one click. No questions asked.</div>
   </div>
   <div class="faq-item" onclick="toggleFaq(this)">
     <div class="faq-q">What payment methods do you accept? <i class="ti ti-chevron-down"></i></div>
@@ -158,11 +161,7 @@ footer{border-top:1px solid var(--border);padding:2rem 2.5rem;display:flex;justi
   </div>
   <div class="faq-item" onclick="toggleFaq(this)">
     <div class="faq-q">Do you offer refunds? <i class="ti ti-chevron-down"></i></div>
-    <div class="faq-a">Yes! We offer a 30-day money-back guarantee. If you're not happy for any reason, contact us and we'll refund you in full.</div>
-  </div>
-  <div class="faq-item" onclick="toggleFaq(this)">
-    <div class="faq-q">Can I switch plans? <i class="ti ti-chevron-down"></i></div>
-    <div class="faq-a">Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately and we'll prorate the billing.</div>
+    <div class="faq-a">Yes! We offer a 30-day money-back guarantee. If you're not happy, contact us and we'll refund you in full.</div>
   </div>
 </div>
 
@@ -171,17 +170,71 @@ footer{border-top:1px solid var(--border);padding:2rem 2.5rem;display:flex;justi
   <div class="footer-copy">© 2026 AuraAI · <a href="privacy.html" style="color:var(--muted);">Privacy</a> · <a href="terms.html" style="color:var(--muted);">Terms</a></div>
 </footer>
 
-<script>
-function toggleBilling() {
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+const supabase = createClient(
+  'https://svuhyxxsfgujosmxejyy.supabase.co',
+  'sb_publishable_pJMBD68Lm3caEZqI02cg4A_cNbrFu5q'
+);
+
+const STRIPE_KEY = 'pk_live_51Ta5FGBhbQxuTXNbrdd21N7wbKQwhJGohu8vQoAyTSAyjSq4JLviHdhOMUBGG7hbLwueOrzcAn7QkUfN8E4vVLs8000fbCetcf';
+const PRICE_ID = 'price_1TaATSBhbQxuTXNbtuBjSiIC';
+
+
+
+window.subscribe = async function() {
+  const btn = document.getElementById('subscribe-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader spin"></i> Loading...';
+
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (!session) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  try {
+    const stripe = Stripe(STRIPE_KEY);
+  const { error } = await stripe.redirectToCheckout({
+      lineItems: [{ price: PRICE_ID, quantity: 1 }],
+      mode: 'subscription',
+      successUrl: window.location.origin + '/index.html?subscribed=true',
+      cancelUrl: window.location.origin + '/pricing.html',
+      customerEmail: session.user.email,
+    });
+    if (error) {
+      alert(error.message);
+      btn.disabled = false;
+      btn.innerHTML = 'Start 7-day free trial →';
+    }
+  } catch(e) {
+    alert('Something went wrong. Please try again.');
+    btn.disabled = false;
+    btn.innerHTML = 'Start 7-day free trial →';
+  }
+};
+
+window.toggleBilling = function() {
   const annual = document.getElementById('billing').checked;
   document.getElementById('pro-price').textContent = annual ? '$12' : '$19';
   document.getElementById('pro-per').textContent = annual ? 'per month, billed annually' : 'per month';
   document.getElementById('team-price').textContent = annual ? '$32' : '$49';
-  document.getElementById('team-per').textContent = annual ? 'per month, billed annually' : 'per month, 5 seats';
-}
-function toggleFaq(el) {
+};
+
+window.toggleFaq = function(el) {
   el.classList.toggle('open');
-}
+};
+
+// Check login status for nav
+supabase.auth.getSession().then(({ data: { session } }) => {
+  if (session) {
+    const name = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
+    document.querySelector('nav a:last-child').outerHTML = 
+      `<span style="font-size:14px;color:var(--muted);">Hi, ${name} 👋</span>`;
+  }
+});
 </script>
 </body>
 </html>
